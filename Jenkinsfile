@@ -10,7 +10,7 @@ pipeline {
         // SONAR_PROJECT_KEY = credentials('sonar-project-key')
         // SONAR_ORGANIZATION = credentials('sonar-organization')
         SSH_CREDENTIALS_ID = 'prod-server-ssh' 
-        // PROD_SERVER_IP = credentials('prod-server-ip')
+        PROD_SERVER_IP = credentials('prod-server-ip')
         ANSIBLE_HOST_KEY_CHECKING = 'False'
         TRIVY_SEVERITY = 'CRITICAL,HIGH'
 
@@ -213,9 +213,9 @@ pipeline {
             =========================================
             Deployment Successful - Version ${VERSION}
             =========================================
-            // IC-Webapp: http://${PROD_SERVER_IP}:8080
-            // Odoo: http://${PROD_SERVER_IP}:8069
-            // PgAdmin: http://${PROD_SERVER_IP}:5050
+            IC-Webapp: http://${PROD_SERVER_IP}:8080
+            Odoo: http://${PROD_SERVER_IP}:8069
+            PgAdmin: http://${PROD_SERVER_IP}:5050
             =========================================
             """
         }
