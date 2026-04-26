@@ -6,10 +6,14 @@ pipeline {
         DOCKER_REPO = 'kevinlagaza'
         IC_WEBAPP_IMAGE = "${DOCKER_REPO}/ic-webapp"
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        // Sonarqube
+        SONAR_PROJECT_KEY = credentials('sonar-project-key')
+        SONAR_ORGANIZATION = credentials('sonar-organization')
         SSH_CREDENTIALS_ID = credentials('prod-server-ssh') 
         PROD_SERVER_IP = credentials('prod-server-ip')
         ANSIBLE_HOST_KEY_CHECKING = 'False'
         TRIVY_SEVERITY = 'CRITICAL,HIGH'
+
     }
 
     stages {
@@ -28,6 +32,30 @@ pipeline {
                     ).trim()
                     echo "Version: ${env.VERSION}"
                 }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            agent {
+                docker {
+                    image "${MAVEN_IMAGE}"
+                    args '-v $HOME/.m2:/root/.m2'
+                    reuseNode true
+                }
+            }
+            steps {
+                echo '========== SONARQUBE ANALYSIS =========='
+                withSonarQubeEnv('sonarqube') {
+                    sh """
+                        mvn sonar:sonar \
+                            -Dsonar.projectKey=${PROJECT_KEY} \
+                            -Dsonar.organization=${SONAR_ORGANIZATION} \
+                            -Dsonar.projectVersion=${VERSION} \
+                            -Dsonar.python.version=3.11 \
+                            -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
+                    """
+                }
+                echo '========== FINISHED SONARQUBE ANALYSIS =========='
             }
         }
 
