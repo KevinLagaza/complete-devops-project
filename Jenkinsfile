@@ -9,7 +9,7 @@ pipeline {
         // Sonarqube
         SONAR_PROJECT_KEY = credentials('sonar-project-key')
         SONAR_ORGANIZATION = credentials('sonar-organization')
-        SSH_CREDENTIALS_ID = credentials('prod-server-ssh') 
+        SSH_CREDENTIALS_ID = 'prod-server-ssh' 
         PROD_SERVER_IP = credentials('prod-server-ip')
         ANSIBLE_HOST_KEY_CHECKING = 'False'
         TRIVY_SEVERITY = 'CRITICAL,HIGH'
