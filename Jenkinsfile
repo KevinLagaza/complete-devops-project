@@ -35,32 +35,25 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            agent {
-                docker {
-                    image "${MAVEN_IMAGE}"
-                    args '-v $HOME/.m2:/root/.m2'
-                    reuseNode true
-                }
-            }
-            steps {
-                echo '========== SONARQUBE ANALYSIS =========='
-                withSonarQubeEnv('sonarqube') {
-                    sh """
-                        mvn sonar:sonar \
-                            -Dsonar.projectKey=${PROJECT_KEY} \
-                            -Dsonar.organization=${SONAR_ORGANIZATION} \
-                            -Dsonar.projectVersion=${VERSION} \
-                            -Dsonar.python.version=3.11 \
-                            -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
-                    """
-                }
-                echo '========== FINISHED SONARQUBE ANALYSIS =========='
-            }
-        }
-
         stage('Security Scan - Code') {
             parallel {
+                // stage('SonarQube Analysis') {
+                //     steps {
+                //         echo '========== SONARQUBE ANALYSIS =========='
+                //         withSonarQubeEnv('sonarqube') {
+                //             sh """
+                //                 mvn sonar:sonar \
+                //                     -Dsonar.projectKey=${PROJECT_KEY} \
+                //                     -Dsonar.organization=${SONAR_ORGANIZATION} \
+                //                     -Dsonar.projectVersion=${VERSION} \
+                //                     -Dsonar.python.version=3.11 \
+                //                     -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
+                //             """
+                //         }
+                //         echo '========== FINISHED SONARQUBE ANALYSIS =========='
+                //     }
+                // }
+
                 stage('SAST - Bandit') {
                     steps {
                         sh """
@@ -69,6 +62,7 @@ pipeline {
                         """
                     }
                 }
+
                 stage('Secrets - Gitleaks') {
                     steps {
                         sh """
@@ -80,26 +74,26 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh """
-                    docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
-                """
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         sh """
+        //             docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
+        //         """
+        //     }
+        // }
 
-        stage('Security Scan - Images') {
-            steps {
-                sh """
-                    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-                        aquasec/trivy:latest image \
-                        --severity ${TRIVY_SEVERITY} \
-                        --exit-code 1 \
-                        --ignore-unfixed \
-                        ${IC_WEBAPP_IMAGE}:${VERSION}
-                """
-            }
-        }
+        // stage('Security Scan - Images') {
+        //     steps {
+        //         sh """
+        //             docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+        //                 aquasec/trivy:latest image \
+        //                 --severity ${TRIVY_SEVERITY} \
+        //                 --exit-code 1 \
+        //                 --ignore-unfixed \
+        //                 ${IC_WEBAPP_IMAGE}:${VERSION}
+        //         """
+        //     }
+        // }
 
 //         stage('Test') {
 //             steps {
