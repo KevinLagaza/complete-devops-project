@@ -213,10 +213,6 @@ pipeline {
             =========================================
             Deployment Successful - Version ${VERSION}
             =========================================
-            IC-Webapp: http://${PROD_SERVER_IP}:8080
-            Odoo: http://${PROD_SERVER_IP}:8069
-            PgAdmin: http://${PROD_SERVER_IP}:5050
-            =========================================
             """
         }
         failure {
