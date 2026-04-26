@@ -1,0 +1,25 @@
+---
+- name: Create compose directory
+  ansible.builtin.file:
+    path: "{{ compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Deploy docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ compose_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Pull and start IC-Webapp
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_dir }}"
+    state: present
+    pull: always
+
+- name: Verify IC-Webapp is running
+  ansible.builtin.uri:
+    url: "http://localhost:{{ app_port }}"
+    status_code: 200
+  retries: 5
+  delay: 10

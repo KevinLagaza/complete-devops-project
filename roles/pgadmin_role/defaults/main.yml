@@ -1,0 +1,22 @@
+---
+# Network configuration
+pgadmin_network_name: odoo_network
+pgadmin_network_external: true
+
+# pgAdmin configuration
+pgadmin_service_name: pgadmin
+pgadmin_container_name: pgadmin
+pgadmin_image: dpage/pgadmin4:9.14.0
+pgadmin_port: 5050
+pgadmin_email: admin@example.com
+pgadmin_password: admin_secure_password
+
+# Volume configuration
+pgadmin_volume_name: pgadmin_data
+pgadmin_volume_path: /var/lib/pgadmin
+pgadmin_local_path: ""
+
+# Docker compose configuration
+pgadmin_compose_dir: /opt/pgadmin
+
+...

@@ -1,0 +1,7 @@
+---
+- name: Restart pgAdmin
+  community.docker.docker_compose_v2:
+    project_src: "{{ pgadmin_compose_dir }}"
+    state: restarted
+
+...

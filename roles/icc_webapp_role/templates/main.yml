@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  {{ container_name }}:
+    image: {{ app_image }}
+    container_name: {{ container_name }}
+    restart: unless-stopped
+    ports:
+      - "{{ app_port }}:8080"
+    networks:
+      - {{ app_network }}
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  {{ app_network }}:
+    external: true

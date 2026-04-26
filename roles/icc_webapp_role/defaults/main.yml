@@ -1,0 +1,6 @@
+---
+container_name: "ic-webapp"
+app_image: "ic-webapp:latest"
+app_port: 8080
+app_network: "app_network"
+compose_dir: "/opt/ic-webapp"

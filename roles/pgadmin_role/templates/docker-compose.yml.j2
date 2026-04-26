@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  {{ pgadmin_service_name }}:
+    image: {{ pgadmin_image }}
+    container_name: {{ pgadmin_container_name }}
+    restart: unless-stopped
+    ports:
+      - "{{ pgadmin_port }}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: {{ pgadmin_email }}
+      PGADMIN_DEFAULT_PASSWORD: {{ pgadmin_password }}
+    volumes:
+{% if pgadmin_local_path != "" %}
+      - {{ pgadmin_local_path }}:{{ pgadmin_volume_path }}
+{% else %}
+      - {{ pgadmin_volume_name }}:{{ pgadmin_volume_path }}
+{% endif %}
+    networks:
+      - {{ pgadmin_network_name }}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/misc/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  {{ pgadmin_network_name }}:
+{% if pgadmin_network_external %}
+    external: true
+{% else %}
+    name: {{ pgadmin_network_name }}
+    driver: bridge
+{% endif %}
+
+{% if pgadmin_local_path == "" %}
+volumes:
+  {{ pgadmin_volume_name }}:
+    name: {{ pgadmin_volume_name }}
+{% endif %}

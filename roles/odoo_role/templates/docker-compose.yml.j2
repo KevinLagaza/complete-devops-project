@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  {{ postgres_service_name }}:
+    image: {{ postgres_image }}
+    container_name: {{ postgres_container_name }}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: {{ postgres_user }}
+      POSTGRES_PASSWORD: {{ postgres_password }}
+      POSTGRES_DB: {{ postgres_db }}
+    volumes:
+{% if postgres_local_path != "" %}
+      - {{ postgres_local_path }}:{{ postgres_volume_path }}
+{% else %}
+      - {{ postgres_volume_name }}:{{ postgres_volume_path }}
+{% endif %}
+    networks:
+      - {{ odoo_network_name }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres_user }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  {{ odoo_service_name }}:
+    image: {{ odoo_image }}
+    container_name: {{ odoo_container_name }}
+    restart: unless-stopped
+    depends_on:
+      {{ postgres_service_name }}:
+        condition: service_healthy
+    ports:
+      - "{{ odoo_port }}:8069"
+    environment:
+      HOST: {{ postgres_service_name }}
+      USER: {{ postgres_user }}
+      PASSWORD: {{ postgres_password }}
+    volumes:
+{% if odoo_data_local_path != "" %}
+      - {{ odoo_data_local_path }}:{{ odoo_data_volume_path }}
+{% else %}
+      - {{ odoo_data_volume_name }}:{{ odoo_data_volume_path }}
+{% endif %}
+{% if odoo_addons_local_path != "" %}
+      - {{ odoo_addons_local_path }}:{{ odoo_addons_volume_path }}
+{% else %}
+      - {{ odoo_addons_volume_name }}:{{ odoo_addons_volume_path }}
+{% endif %}
+{% if odoo_config_local_path != "" %}
+      - {{ odoo_config_local_path }}:{{ odoo_config_volume_path }}
+{% else %}
+      - {{ odoo_config_volume_name }}:{{ odoo_config_volume_path }}
+{% endif %}
+    networks:
+      - {{ odoo_network_name }}
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8069/web/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  {{ odoo_network_name }}:
+    name: {{ odoo_network_name }}
+    driver: {{ odoo_network_driver }}
+
+volumes:
+{% if postgres_local_path == "" %}
+  {{ postgres_volume_name }}:
+    name: {{ postgres_volume_name }}
+{% endif %}
+{% if odoo_data_local_path == "" %}
+  {{ odoo_data_volume_name }}:
+    name: {{ odoo_data_volume_name }}
+{% endif %}
+{% if odoo_addons_local_path == "" %}
+  {{ odoo_addons_volume_name }}:
+    name: {{ odoo_addons_volume_name }}
+{% endif %}
+{% if odoo_config_local_path == "" %}
+  {{ odoo_config_volume_name }}:
+    name: {{ odoo_config_volume_name }}
+{% endif %}

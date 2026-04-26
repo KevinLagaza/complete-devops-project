@@ -1,0 +1,35 @@
+---
+# Network configuration
+odoo_network_name: odoo_network
+odoo_network_driver: bridge
+
+# PostgreSQL configuration
+postgres_service_name: postgres
+postgres_container_name: odoo-db
+postgres_image: postgres:15
+postgres_user: odoo
+postgres_password: odoo_secure_password
+postgres_db: postgres
+postgres_volume_name: odoo_postgres_data
+postgres_volume_path: /var/lib/postgresql/data
+postgres_local_path: ""
+
+# Odoo configuration
+odoo_service_name: odoo
+odoo_container_name: odoo
+odoo_image: "odoo:13"
+odoo_port: 8069
+odoo_data_volume_name: odoo_data
+odoo_data_volume_path: /var/lib/odoo
+odoo_data_local_path: ""
+odoo_addons_volume_name: odoo_addons
+odoo_addons_volume_path: /mnt/extra-addons
+odoo_addons_local_path: ""
+odoo_config_volume_name: odoo_config
+odoo_config_volume_path: /etc/odoo
+odoo_config_local_path: ""
+
+# Docker compose configuration
+odoo_compose_dir: /opt/odoo
+
+...

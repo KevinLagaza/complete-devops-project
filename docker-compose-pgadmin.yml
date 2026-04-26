@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:9.14.0
+    container_name: pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin_secure_password
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - odoo_network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/misc/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  odoo_network:
+    external: true
+
+volumes:
+  pgadmin_data:
+    name: pgadmin_data

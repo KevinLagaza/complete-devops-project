@@ -1,0 +1,44 @@
+---
+- name: Create pgAdmin compose directory
+  ansible.builtin.file:
+    path: "{{ pgadmin_compose_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create local directory for volume if specified
+  ansible.builtin.file:
+    path: "{{ pgadmin_local_path }}"
+    state: directory
+    mode: '0755'
+    owner: '5050'
+    group: '5050'
+  when: pgadmin_local_path != ""
+
+- name: Deploy pgAdmin docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ pgadmin_compose_dir }}/docker-compose.yml"
+    mode: '0644'
+  notify: Restart pgAdmin
+
+- name: Start pgAdmin
+  community.docker.docker_compose_v2:
+    project_src: "{{ pgadmin_compose_dir }}"
+    state: present
+
+- name: Wait for pgAdmin to be ready
+  ansible.builtin.wait_for:
+    port: "{{ pgadmin_port }}"
+    delay: 5
+    timeout: 60
+
+- name: Verify pgAdmin is accessible
+  ansible.builtin.uri:
+    url: "http://localhost:{{ pgadmin_port }}"
+    status_code: 200
+  register: pgadmin_health
+  retries: 5
+  delay: 10
+  until: pgadmin_health.status == 200
+
+...
