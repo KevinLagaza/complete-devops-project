@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'docker.io'
+        SONAR_HOST_URL = 'https://sonarcloud.io'
         DOCKER_REPO = 'kevinlagaza'
         IC_WEBAPP_IMAGE = "${DOCKER_REPO}/ic-webapp"
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
@@ -40,13 +41,13 @@ pipeline {
                 stage('SonarQube Analysis') {
                     steps {
                         echo '========== SONARQUBE ANALYSIS =========='
-                        withSonarQubeEnv('sonarqube') {
+                        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                             sh """
                             docker run --rm \
                                     -v \$(pwd):/usr/src \
-                                    -e SONAR_HOST_URL=\${SONAR_HOST_URL} \
-                                    -e SONAR_TOKEN=\${SONAR_AUTH_TOKEN} \
                                     sonarsource/sonar-scanner-cli \
+                                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                                    -Dsonar.token=\${SONAR_TOKEN} \
                                     -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                                     -Dsonar.organization=${SONAR_ORGANIZATION} \
                                     -Dsonar.projectVersion=${VERSION} \
