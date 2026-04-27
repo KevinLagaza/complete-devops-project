@@ -5,10 +5,10 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_REPO = 'kevinlagaza'
         IC_WEBAPP_IMAGE = "${DOCKER_REPO}/ic-webapp"
-        // DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         // Sonarqube
-        // SONAR_PROJECT_KEY = credentials('sonar-project-key')
-        // SONAR_ORGANIZATION = credentials('sonar-organization')
+        SONAR_PROJECT_KEY = credentials('sonar-project-key')
+        SONAR_ORGANIZATION = credentials('sonar-organization')
         SSH_CREDENTIALS_ID = 'prod-server-ssh' 
         PROD_SERVER_IP = credentials('prod-server-ip')
         ANSIBLE_HOST_KEY_CHECKING = 'False'
@@ -37,22 +37,22 @@ pipeline {
 
         stage('Security Scan - Code') {
             parallel {
-                // stage('SonarQube Analysis') {
-                //     steps {
-                //         echo '========== SONARQUBE ANALYSIS =========='
-                //         withSonarQubeEnv('sonarqube') {
-                //             sh """
-                //                 mvn sonar:sonar \
-                //                     -Dsonar.projectKey=${PROJECT_KEY} \
-                //                     -Dsonar.organization=${SONAR_ORGANIZATION} \
-                //                     -Dsonar.projectVersion=${VERSION} \
-                //                     -Dsonar.python.version=3.11 \
-                //                     -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
-                //             """
-                //         }
-                //         echo '========== FINISHED SONARQUBE ANALYSIS =========='
-                //     }
-                // }
+                stage('SonarQube Analysis') {
+                    steps {
+                        echo '========== SONARQUBE ANALYSIS =========='
+                        withSonarQubeEnv('sonarqube') {
+                            sh """
+                                mvn sonar:sonar \
+                                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                                    -Dsonar.organization=${SONAR_ORGANIZATION} \
+                                    -Dsonar.projectVersion=${VERSION} \
+                                    -Dsonar.python.version=3.11 \
+                                    -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
+                            """
+                        }
+                        echo '========== FINISHED SONARQUBE ANALYSIS =========='
+                    }
+                }
 
                 stage('SAST - Bandit') {
                     steps {
