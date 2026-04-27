@@ -42,10 +42,15 @@ pipeline {
                         echo '========== SONARQUBE ANALYSIS =========='
                         withSonarQubeEnv('sonarqube') {
                             sh """
-                                mvn sonar:sonar \
+                            docker run --rm \
+                                    -v \$(pwd):/usr/src \
+                                    -e SONAR_HOST_URL=\${SONAR_HOST_URL} \
+                                    -e SONAR_TOKEN=\${SONAR_AUTH_TOKEN} \
+                                    sonarsource/sonar-scanner-cli \
                                     -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                                     -Dsonar.organization=${SONAR_ORGANIZATION} \
                                     -Dsonar.projectVersion=${VERSION} \
+                                    -Dsonar.sources=. \
                                     -Dsonar.python.version=3.11 \
                                     -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
                             """
