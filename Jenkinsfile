@@ -101,34 +101,34 @@ pipeline {
             }
         }
 
-//         stage('Test') {
-//             steps {
-//                 sh """
-//                     docker network create test-net-${BUILD_NUMBER} || true
+        stage('Test') {
+            steps {
+                sh """
+                    docker network create test-net-${BUILD_NUMBER} || true
                     
-//                     docker run -d --name ic-test-${BUILD_NUMBER} \
-//                         --network test-net-${BUILD_NUMBER} \
-//                         -p 8081:8080 \
-//                         ${IC_WEBAPP_IMAGE}:${VERSION}
+                    docker run -d --name ic-test-${BUILD_NUMBER} \
+                        --network test-net-${BUILD_NUMBER} \
+                        -p 8081:8080 \
+                        ${IC_WEBAPP_IMAGE}:${VERSION}
                     
-//                     sleep 10
+                    sleep 10
                     
-//                     curl -f http://localhost:8081 || exit 1
-//                     docker exec ic-test-${BUILD_NUMBER} env | grep -q ODOO_URL || exit 1
+                    curl -f http://localhost:8081 || exit 1
+                    docker exec ic-test-${BUILD_NUMBER} env | grep -q ODOO_URL || exit 1
                     
-//                     echo "Tests passed"
-//                 """
-//             }
-//             post {
-//                 always {
-//                     sh """
-//                         docker stop ic-test-${BUILD_NUMBER} || true
-//                         docker rm ic-test-${BUILD_NUMBER} || true
-//                         docker network rm test-net-${BUILD_NUMBER} || true
-//                     """
-//                 }
-//             }
-//         }
+                    echo "Tests passed"
+                """
+            }
+            post {
+                always {
+                    sh """
+                        docker stop ic-test-${BUILD_NUMBER} || true
+                        docker rm ic-test-${BUILD_NUMBER} || true
+                        docker network rm test-net-${BUILD_NUMBER} || true
+                    """
+                }
+            }
+        }
 
 //         stage('Push') {
 //             steps {
