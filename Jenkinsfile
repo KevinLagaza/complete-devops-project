@@ -114,8 +114,15 @@ pipeline {
                     sleep 10
                     
                     docker ps
-                    docker exec ic-test-${BUILD_NUMBER} bash -c "curl -f http://localhost:8080 || exit 1"
+                    # Retrieve the IP of the container
+                    CONTAINER_IP=\$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ic-test-${BUILD_NUMBER})
+            
+                    # Test the application
+                    docker exec ic-test-${BUILD_NUMBER} curl -sf http://\${CONTAINER_IP}:8080 || exit 1
+
+                    # Verify the environment variables are set correctly
                     docker exec ic-test-${BUILD_NUMBER} env | grep -q ODOO_URL || exit 1
+                    docker exec ic-test-${BUILD_NUMBER} env | grep -q PGADMIN_URL || exit 1
                     
                     echo "Tests passed"
                 """
