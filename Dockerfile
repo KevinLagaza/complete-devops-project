@@ -15,6 +15,11 @@ LABEL maintainer="lagazakevin@gmail.com" \
 
 WORKDIR /opt
 
+# Install curl for health checks
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Upgrade vulnerable packages in final image
 RUN pip install --upgrade --no-cache-dir \
     pip \
