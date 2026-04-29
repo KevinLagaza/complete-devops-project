@@ -29,8 +29,8 @@ RUN ODOO_URL=$(awk -F': ' '/^ODOO_URL:/ {print $2}' releases.txt) && \
     PGADMIN_URL=$(awk -F': ' '/^PGADMIN_URL:/ {print $2}' releases.txt) && \
     # echo "ODOO_URL=$ODOO_URL" >> /etc/environment && \
     # echo "PGADMIN_URL=$PGADMIN_URL" >> /etc/environment
-    && echo "ODOO_URL=$ODOO_URL" > /opt/env.sh \
-    && echo "PGADMIN_URL=$PGADMIN_URL" >> /opt/env.sh
+    echo "ODOO_URL=$ODOO_URL" > /opt/env.sh && \
+    echo "PGADMIN_URL=$PGADMIN_URL" >> /opt/env.sh
 
 # Set environment variables using ARG and ENV
 # ARG ODOO_URL_ARG
