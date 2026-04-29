@@ -1,0 +1,4 @@
+flask==2.3.2
+werkzeug==3.0.3
+jaraco.context==6.1.0
+wheel==0.46.2

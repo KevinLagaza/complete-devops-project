@@ -1,13 +1,11 @@
 # Stage 1: Builder
-FROM python:3.6-alpine AS builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /opt
 
-# Install build dependencies
-RUN apk add --no-cache gcc musl-dev
-
 # Install Python dependencies
-RUN pip install --user --no-cache-dir flask
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
 
 # Stage 2: Production
 FROM python:3.11-slim AS final
