@@ -80,13 +80,13 @@ pipeline {
         //     }
         // }
 
-        stage('Build') {
-            steps {
-                sh """
-                    docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
-                """
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         sh """
+        //             docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
+        //         """
+        //     }
+        // }
 
         // stage('Security Scan - Images') {
         //     steps {
@@ -101,106 +101,106 @@ pipeline {
         //     }
         // }
 
-        stage('Test') {
-            steps {
-                sh """
-                    docker network create test-net-${BUILD_NUMBER} || true
+        // stage('Test') {
+        //     steps {
+        //         sh """
+        //             docker network create test-net-${BUILD_NUMBER} || true
                     
-                    docker run -d --name ic-test-${BUILD_NUMBER} \
-                        --network test-net-${BUILD_NUMBER} \
-                        -p 8081:8080 \
-                        ${IC_WEBAPP_IMAGE}:${VERSION}
+        //             docker run -d --name ic-test-${BUILD_NUMBER} \
+        //                 --network test-net-${BUILD_NUMBER} \
+        //                 -p 8081:8080 \
+        //                 ${IC_WEBAPP_IMAGE}:${VERSION}
                     
-                    sleep 10
+        //             sleep 10
                     
-                    docker ps
-                    # Retrieve the IP of the container
-                    CONTAINER_IP=\$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ic-test-${BUILD_NUMBER})
+        //             docker ps
+        //             # Retrieve the IP of the container
+        //             CONTAINER_IP=\$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ic-test-${BUILD_NUMBER})
             
-                    # Test the application
-                    docker exec ic-test-${BUILD_NUMBER} curl -sf http://\${CONTAINER_IP}:8080 || exit 1
+        //             # Test the application
+        //             docker exec ic-test-${BUILD_NUMBER} curl -sf http://\${CONTAINER_IP}:8080 || exit 1
 
-                    # Verify the environment variables are set correctly
-                    docker exec ic-test-${BUILD_NUMBER} cat /opt/env.sh | grep -q ODOO_URL || exit 1
-                    docker exec ic-test-${BUILD_NUMBER} cat /opt/env.sh | grep -q PGADMIN_URL || exit 1
+        //             # Verify the environment variables are set correctly
+        //             docker exec ic-test-${BUILD_NUMBER} cat /opt/env.sh | grep -q ODOO_URL || exit 1
+        //             docker exec ic-test-${BUILD_NUMBER} cat /opt/env.sh | grep -q PGADMIN_URL || exit 1
                     
-                    echo "Tests passed"
-                """
-            }
-            post {
-                always {
-                    sh """
-                        docker stop ic-test-${BUILD_NUMBER} || true
-                        docker rm ic-test-${BUILD_NUMBER} || true
-                        docker network rm test-net-${BUILD_NUMBER} || true
-                    """
-                }
-            }
-        }
+        //             echo "Tests passed"
+        //         """
+        //     }
+        //     post {
+        //         always {
+        //             sh """
+        //                 docker stop ic-test-${BUILD_NUMBER} || true
+        //                 docker rm ic-test-${BUILD_NUMBER} || true
+        //                 docker network rm test-net-${BUILD_NUMBER} || true
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('Push') {
+        // stage('Push') {
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: "${DOCKER_CREDENTIALS_ID}",
+        //             usernameVariable: 'DOCKER_USER',
+        //             passwordVariable: 'DOCKER_PASS'
+        //         )]) {
+        //             sh """
+        //                 echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+        //                 docker push ${IC_WEBAPP_IMAGE}:${VERSION}
+        //                 docker logout
+        //             """
+        //         }
+        //     }
+        // }
+
+        stage('Deploy with Ansible') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: "${DOCKER_CREDENTIALS_ID}",
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: "${SSH_CREDENTIALS_ID}",
+                    keyFileVariable: 'SSH_KEY'
                 )]) {
                     sh """
-                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        docker push ${IC_WEBAPP_IMAGE}:${VERSION}
-                        docker logout
+                        # Create dynamic inventory
+                        cat > inventory.yml << EOF
+all:
+  hosts:
+    prod:
+      ansible_host: ${PROD_SERVER_IP}
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ${SSH_KEY}
+EOF
+
+                        # Create playbook
+                        cat > deploy.yml << EOF
+---
+- name: Deploy IC-Webapp Stack
+  hosts: prod
+  become: true
+
+  vars:
+    ic_webapp_image: "${IC_WEBAPP_IMAGE}"
+    ic_webapp_version: "${VERSION}"
+    odoo_port: 8069
+    pgadmin_port: 5050
+    ic_webapp_port: 8080
+
+  roles:
+    - role: odoo_role
+    - role: pgadmin_role
+    - role: ic_webapp_role
+      vars:
+        container_name: "ic-webapp"
+        app_image: "{{ ic_webapp_image }}:{{ ic_webapp_version }}"
+        app_port: "{{ ic_webapp_port }}"
+EOF
+
+                        # Run Ansible
+                        ansible-playbook -i inventory.yml deploy.yml
                     """
                 }
             }
         }
-
-//         stage('Deploy with Ansible') {
-//             steps {
-//                 withCredentials([sshUserPrivateKey(
-//                     credentialsId: "${SSH_CREDENTIALS_ID}",
-//                     keyFileVariable: 'SSH_KEY'
-//                 )]) {
-//                     sh """
-//                         # Create dynamic inventory
-//                         cat > inventory.yml << EOF
-// all:
-//   hosts:
-//     prod:
-//       ansible_host: ${PROD_SERVER_IP}
-//       ansible_user: ubuntu
-//       ansible_ssh_private_key_file: ${SSH_KEY}
-// EOF
-
-//                         # Create playbook
-//                         cat > deploy.yml << EOF
-// ---
-// - name: Deploy IC-Webapp Stack
-//   hosts: prod
-//   become: true
-
-//   vars:
-//     ic_webapp_image: "${IC_WEBAPP_IMAGE}"
-//     ic_webapp_version: "${VERSION}"
-//     odoo_port: 8069
-//     pgadmin_port: 5050
-//     ic_webapp_port: 8080
-
-//   roles:
-//     - role: odoo_role
-//     - role: pgadmin_role
-//     - role: ic_webapp_role
-//       vars:
-//         container_name: "ic-webapp"
-//         app_image: "{{ ic_webapp_image }}:{{ ic_webapp_version }}"
-//         app_port: "{{ ic_webapp_port }}"
-// EOF
-
-//                         # Run Ansible
-//                         ansible-playbook -i inventory.yml deploy.yml
-//                     """
-//                 }
-//             }
-//         }
 
 //         stage('Verify Deployment') {
 //             steps {
