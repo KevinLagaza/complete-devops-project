@@ -114,7 +114,7 @@ pipeline {
                     sleep 10
                     
                     docker ps
-                    // curl -f http://localhost:8081 || exit 1
+                    docker exec ic-test-${BUILD_NUMBER} bash -c "curl -f http://localhost:8081 || exit 1"
                     docker exec ic-test-${BUILD_NUMBER} env | grep -q ODOO_URL || exit 1
                     
                     echo "Tests passed"
