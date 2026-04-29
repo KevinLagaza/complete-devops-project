@@ -121,8 +121,8 @@ pipeline {
                     docker exec ic-test-${BUILD_NUMBER} curl -sf http://\${CONTAINER_IP}:8080 || exit 1
 
                     # Verify the environment variables are set correctly
-                    docker exec ic-test-${BUILD_NUMBER} env | grep -q ODOO_URL || exit 1
-                    docker exec ic-test-${BUILD_NUMBER} env | grep -q PGADMIN_URL || exit 1
+                    docker exec ic-test-${BUILD_NUMBER} cat /opt/env.sh | grep -q ODOO_URL || exit 1
+                    docker exec ic-test-${BUILD_NUMBER} cat /opt/env.sh | grep -q PGADMIN_URL || exit 1
                     
                     echo "Tests passed"
                 """
