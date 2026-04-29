@@ -15,6 +15,13 @@ LABEL maintainer="lagazakevin@gmail.com" \
 
 WORKDIR /opt
 
+# Upgrade vulnerable packages in final image
+RUN pip install --upgrade --no-cache-dir \
+    pip \
+    wheel==0.46.2 \
+    setuptools \
+    jaraco.context==6.1.0
+
 # Copy installed packages from builder
 COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
