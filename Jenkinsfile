@@ -36,70 +36,70 @@ pipeline {
             }
         }
 
-        stage('Security Scan - Code') {
-            parallel {
-                stage('SonarQube Analysis') {
-                    steps {
-                        echo '========== SONARQUBE ANALYSIS =========='
-                        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                            sh """
-                            docker run --rm \
-                                    -v \$(pwd):/usr/src \
-                                    sonarsource/sonar-scanner-cli \
-                                    -Dsonar.host.url=${SONAR_HOST_URL} \
-                                    -Dsonar.token=\${SONAR_TOKEN} \
-                                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                                    -Dsonar.organization=${SONAR_ORGANIZATION} \
-                                    -Dsonar.projectVersion=${VERSION} \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.python.version=3.11 \
-                                    -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
-                            """
-                        }
-                        echo '========== FINISHED SONARQUBE ANALYSIS =========='
-                    }
-                }
+        // stage('Security Scan - Code') {
+        //     parallel {
+        //         stage('SonarQube Analysis') {
+        //             steps {
+        //                 echo '========== SONARQUBE ANALYSIS =========='
+        //                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+        //                     sh """
+        //                     docker run --rm \
+        //                             -v \$(pwd):/usr/src \
+        //                             sonarsource/sonar-scanner-cli \
+        //                             -Dsonar.host.url=${SONAR_HOST_URL} \
+        //                             -Dsonar.token=\${SONAR_TOKEN} \
+        //                             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+        //                             -Dsonar.organization=${SONAR_ORGANIZATION} \
+        //                             -Dsonar.projectVersion=${VERSION} \
+        //                             -Dsonar.sources=. \
+        //                             -Dsonar.python.version=3.11 \
+        //                             -Dsonar.exclusions=**/*.html,**/*.css,**/*.js
+        //                     """
+        //                 }
+        //                 echo '========== FINISHED SONARQUBE ANALYSIS =========='
+        //             }
+        //         }
 
-                stage('SAST - Bandit') {
-                    steps {
-                        sh """
-                            docker run --rm -v \$(pwd):/code python:3.11-slim \
-                                /bin/bash -c "pip install -q bandit && bandit -r /code -ll -f json -o /code/bandit-report.json || true"
-                        """
-                    }
-                }
+        //         stage('SAST - Bandit') {
+        //             steps {
+        //                 sh """
+        //                     docker run --rm -v \$(pwd):/code python:3.11-slim \
+        //                         /bin/bash -c "pip install -q bandit && bandit -r /code -ll -f json -o /code/bandit-report.json || true"
+        //                 """
+        //             }
+        //         }
 
-                stage('Secrets - Gitleaks') {
-                    steps {
-                        sh """
-                            docker run --rm -v \$(pwd):/path zricethezav/gitleaks:latest \
-                                detect --source=/path --report-path=/path/gitleaks-report.json || true
-                        """
-                    }
-                }
+        //         stage('Secrets - Gitleaks') {
+        //             steps {
+        //                 sh """
+        //                     docker run --rm -v \$(pwd):/path zricethezav/gitleaks:latest \
+        //                         detect --source=/path --report-path=/path/gitleaks-report.json || true
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
+
+        stage('Build') {
+            steps {
+                sh """
+                    docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
+                """
             }
         }
 
-        // stage('Build') {
-        //     steps {
-        //         sh """
-        //             docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
-        //         """
-        //     }
-        // }
-
-        // stage('Security Scan - Images') {
-        //     steps {
-        //         sh """
-        //             docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-        //                 aquasec/trivy:latest image \
-        //                 --severity ${TRIVY_SEVERITY} \
-        //                 --exit-code 1 \
-        //                 --ignore-unfixed \
-        //                 ${IC_WEBAPP_IMAGE}:${VERSION}
-        //         """
-        //     }
-        // }
+        stage('Security Scan - Images') {
+            steps {
+                sh """
+                    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                        aquasec/trivy:latest image \
+                        --severity ${TRIVY_SEVERITY} \
+                        --exit-code 1 \
+                        --ignore-unfixed \
+                        ${IC_WEBAPP_IMAGE}:${VERSION}
+                """
+            }
+        }
 
 //         stage('Test') {
 //             steps {
