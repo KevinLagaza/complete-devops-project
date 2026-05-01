@@ -205,3 +205,5 @@ Configuration du Webhook GitHub
 
 a) Architecture
 
+Regarding the architecture, we have pods.
+
