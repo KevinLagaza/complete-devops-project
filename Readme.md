@@ -203,5 +203,5 @@ Configuration du Webhook GitHub
 
 ## **Part 3: Deloyment of different applications in a k8s cluster**
 
-
+a) Architecture
 
