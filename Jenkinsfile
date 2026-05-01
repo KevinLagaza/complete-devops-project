@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     environment {
         DOCKER_REGISTRY = 'docker.io'
         SONAR_HOST_URL = 'https://sonarcloud.io'
@@ -31,7 +35,12 @@ pipeline {
                         script: "awk -F': ' '/^version:/ {print \$2}' releases.txt",
                         returnStdout: true
                     ).trim()
+                    env.BRANCH_NAME = sh(
+                        script: "git rev-parse --abbrev-ref HEAD",
+                        returnStdout: true
+                    ).trim()
                     echo "Version: ${env.VERSION}"
+                    echo "Branch: ${env.BRANCH_NAME}"
                 }
             }
         }
@@ -82,9 +91,7 @@ pipeline {
 
         stage('Build') {
             when {
-                expression { 
-                    return env.GIT_BRANCH == 'origin/develop'
-                }
+                branch 'develop'
             }
             steps {
                 sh """
@@ -95,9 +102,7 @@ pipeline {
 
         stage('Security Scan - Images') {
             when {
-                expression { 
-                    return env.GIT_BRANCH == 'origin/develop'
-                }
+                branch 'develop'
             }
             steps {
                 sh """
@@ -113,9 +118,7 @@ pipeline {
 
         stage('Test') {
             when {
-                expression { 
-                    return env.GIT_BRANCH == 'origin/develop'
-                }
+                branch 'develop'
             }
             steps {
                 sh """
@@ -155,9 +158,7 @@ pipeline {
 
         stage('Push') {
             when {
-                expression { 
-                    return env.GIT_BRANCH == 'origin/develop'
-                }
+                branch 'main'
             }
             steps {
                 withCredentials([usernamePassword(
@@ -176,9 +177,7 @@ pipeline {
 
         stage('Deploy with Ansible') {
             when {
-                expression { 
-                    return env.GIT_BRANCH == 'origin/develop'
-                }
+                branch 'main'
             }
             steps {
                 withCredentials([sshUserPrivateKey(
@@ -229,9 +228,7 @@ EOF
 
         stage('Verify Deployment') {
             when {
-                expression { 
-                    return env.GIT_BRANCH == 'origin/develop'
-                }
+                branch 'main'
             }
             steps {
                 sh """
