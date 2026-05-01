@@ -196,7 +196,8 @@ EOF
 EOF
 
                         # Run Ansible
-                        ls 
+                        cat deploy.yml
+                        cat inventory.yml 
                         ansible-playbook -i inventory.yml deploy.yml
                     """
                 }
