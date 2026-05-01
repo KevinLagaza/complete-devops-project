@@ -150,7 +150,7 @@ ansible --version
 # Get out of the container
 exit
 ```
-**![Ansible intallation](./images/ansible-installation.png)**
+**![Ansible installation](./images/ansible-installation.png)**
 
 2) Install odoo (on the second server)
 

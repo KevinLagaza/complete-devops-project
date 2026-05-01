@@ -202,18 +202,18 @@ EOF
             }
         }
 
-//         stage('Verify Deployment') {
-//             steps {
-//                 sh """
-//                     sleep 30
+        stage('Verify Deployment') {
+            steps {
+                sh """
+                    sleep 30
                     
-//                     echo "=== Health Checks ==="
-//                     curl -sf http://${PROD_SERVER_IP}:8080 && echo "IC-Webapp: OK" || echo "IC-Webapp: FAILED"
-//                     curl -sf http://${PROD_SERVER_IP}:8069 && echo "Odoo: OK" || echo "Odoo: FAILED"
-//                     curl -sf http://${PROD_SERVER_IP}:5050 && echo "PgAdmin: OK" || echo "PgAdmin: FAILED"
-//                 """
-//             }
-//         }
+                    echo "=== Health Checks ==="
+                    curl -sf http://${PROD_SERVER_IP}:8080 && echo "IC-Webapp: OK" || echo "IC-Webapp: FAILED"
+                    curl -sf http://${PROD_SERVER_IP}:8069 && echo "Odoo: OK" || echo "Odoo: FAILED"
+                    curl -sf http://${PROD_SERVER_IP}:5050 && echo "PgAdmin: OK" || echo "PgAdmin: FAILED"
+                """
+            }
+        }
     }
 
     post {
