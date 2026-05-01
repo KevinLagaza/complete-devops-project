@@ -161,39 +161,39 @@ pipeline {
                     keyFileVariable: 'SSH_KEY'
                 )]) {
                     sh """
-                        # Create dynamic inventory
-                        cat > inventory.yml << EOF
-all:
-  hosts:
-    prod:
-      ansible_host: ${PROD_SERVER_IP}
-      ansible_user: ubuntu
-      ansible_ssh_private_key_file: ${SSH_KEY}
-EOF
+//                         # Create dynamic inventory
+//                         cat > inventory.yml << EOF
+// all:
+//   hosts:
+//     prod:
+//       ansible_host: ${PROD_SERVER_IP}
+//       ansible_user: ubuntu
+//       ansible_ssh_private_key_file: ${SSH_KEY}
+// EOF
 
-                        # Create playbook
-                        cat > deploy.yml << EOF
----
-- name: Deploy IC-Webapp Stack
-  hosts: prod
-  become: true
+//                         # Create playbook
+//                         cat > deploy.yml << EOF
+// ---
+// - name: Deploy IC-Webapp Stack
+//   hosts: prod
+//   become: true
 
-  vars:
-    ic_webapp_image: "${IC_WEBAPP_IMAGE}"
-    ic_webapp_version: "${VERSION}"
-    odoo_port: 8069
-    pgadmin_port: 5050
-    ic_webapp_port: 8080
+//   vars:
+//     ic_webapp_image: "${IC_WEBAPP_IMAGE}"
+//     ic_webapp_version: "${VERSION}"
+//     odoo_port: 8069
+//     pgadmin_port: 5050
+//     ic_webapp_port: 8080
 
-  roles:
-    - role: odoo_role
-    - role: pgadmin_role
-    - role: ic_webapp_role
-      vars:
-        container_name: "ic-webapp"
-        app_image: "{{ ic_webapp_image }}:{{ ic_webapp_version }}"
-        app_port: "{{ ic_webapp_port }}"
-EOF
+//   roles:
+//     - role: odoo_role
+//     - role: pgadmin_role
+//     - role: ic_webapp_role
+//       vars:
+//         container_name: "ic-webapp"
+//         app_image: "{{ ic_webapp_image }}:{{ ic_webapp_version }}"
+//         app_port: "{{ ic_webapp_port }}"
+// EOF
 
                         # Run Ansible
                         ansible-playbook -i inventory.yml deploy.yml
