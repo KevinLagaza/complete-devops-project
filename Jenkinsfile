@@ -248,12 +248,11 @@ EOF
 
     post {
         always {
-            archiveArtifacts artifacts: '*-report.json', allowEmptyArchive: true
             sh "docker system prune -f || true"
             cleanWs()
         }
         success {
-            echo "✅ Pipeline execution successful for branch ${env.BRANCH_NAME}!"
+            echo "✅ Pipeline execution successful for branch ${env.GIT_BRANCH}!"
             echo """
             ==========================================
             Deployment Successful - Version ${VERSION}
