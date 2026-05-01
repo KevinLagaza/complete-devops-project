@@ -1,13 +1,11 @@
 # Stage 1: Builder
-FROM python:3.6-alpine AS builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /opt
 
-# Install build dependencies
-RUN apk add --no-cache gcc musl-dev
-
 # Install Python dependencies
-RUN pip install --user --no-cache-dir flask
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
 
 # Stage 2: Production
 FROM python:3.11-slim AS final
@@ -16,6 +14,18 @@ LABEL maintainer="lagazakevin@gmail.com" \
       description="IC Webapp - Intranet applications display"
 
 WORKDIR /opt
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade vulnerable packages in final image
+RUN pip install --upgrade --no-cache-dir \
+    pip \
+    wheel==0.46.2 \
+    setuptools \
+    jaraco.context==6.1.0
 
 # Copy installed packages from builder
 COPY --from=builder /root/.local /root/.local
@@ -29,8 +39,8 @@ RUN ODOO_URL=$(awk -F': ' '/^ODOO_URL:/ {print $2}' releases.txt) && \
     PGADMIN_URL=$(awk -F': ' '/^PGADMIN_URL:/ {print $2}' releases.txt) && \
     # echo "ODOO_URL=$ODOO_URL" >> /etc/environment && \
     # echo "PGADMIN_URL=$PGADMIN_URL" >> /etc/environment
-    && echo "ODOO_URL=$ODOO_URL" > /opt/env.sh \
-    && echo "PGADMIN_URL=$PGADMIN_URL" >> /opt/env.sh
+    echo "ODOO_URL=$ODOO_URL" > /opt/env.sh && \
+    echo "PGADMIN_URL=$PGADMIN_URL" >> /opt/env.sh
 
 # Set environment variables using ARG and ENV
 # ARG ODOO_URL_ARG
