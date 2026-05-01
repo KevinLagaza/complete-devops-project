@@ -196,6 +196,7 @@ EOF
 EOF
 
                         # Run Ansible
+                        ls 
                         ansible-playbook -i inventory.yml deploy.yml
                     """
                 }
