@@ -60,7 +60,8 @@ ICGROUP's objective is to set up a CI/CD pipeline enabling continuous integratio
 1) AWS
 
 - Create an **elastic IP**. 
-- Create a **security group** and attach **SSH, HTTP, HTTPS, 8080, 8069 and 50000** in the security group rules.
+- Create a **security group** and attach **SSH, HTTP, HTTPS, 8080, 5050, 8069 and 50000** in the security group rules.
+**![Ansible installation](./images/security-group.png)**
 - Create one server (**with at least 30 GB of storage**) and attach both previous elastic IP and security group. 
 - Create **two other servers** for both **odoo** and **webapp**.  
 - Install **docker** and **docker-compose** on all servers
@@ -165,3 +166,40 @@ docker ps
 docker inspect --format='{{json .State.Health}}' odoo | jq
 ```
 Then type ``http://<EC2_PUBLIC_IP>:8069`` in the web browser.
+
+3) Deploying the applications
+
+a)
+After running manually the pipeline, all the apps (including v:1.0 of the web app) were successfully deployed.
+
+**![Manual execution of pipeline](./images/deploiement/manual-pipeline-exec.png)**
+
+**![Dockerhub app v1.0](./images/deploiement/dockerbub-v10.png)**
+
+**![Odoo deployment](./images/deploiement/deploiment-odoo.png)**
+
+**![Pg Admin deployment](./images/deploiement/deploiment-pg-admin.png)**
+
+**![Web app deployment](./images/deploiement/deploiment-appli-web.png)**
+
+b)
+Now, we want to execute the pipeline as soon as a push is made to the develop branch. Before, we need to make some configurations.
+
+Configuration du Webhook GitHub
+Étape 1 : Configurer Jenkins
+
+1)Manage Jenkins → Configure System
+2)Section GitHub → Add GitHub Server
+3)Ajouter les credentials GitHub
+
+Étape 2 : Configurer le repository GitHub
+
+1)Settings → Webhooks → Add webhook
+2)Payload URL : http://<JENKINS_URL>/github-webhook/
+3)Content type : application/json
+4)Events : Just the push event
+
+**![Dockerhub app v1.0](./images/deploiement/dockerbub-v11.png)**
+
+
+
