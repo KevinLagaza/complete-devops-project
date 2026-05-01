@@ -134,6 +134,23 @@ Then access the Jenkins web UI by typing **ELASTIC_IP:8080** in the browser.
 
 b) **Ansible**
 
+```bash
+# Enter the Jenkins container
+docker exec -it -u root jenkins bash
+
+# Install Ansible
+apt-get update && apt-get install -y --no-install-recommends \
+    ansible \
+    sshpass \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify the installation
+ansible --version
+
+# Get out of the container
+exit
+```
+**![Ansible intallation](./images/ansible-installation.png)**
 
 2) Install odoo (on the second server)
 
