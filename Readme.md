@@ -188,20 +188,24 @@ Now, we want to execute the pipeline as soon as a push is made to the develop br
 Configuration du Webhook GitHub
 Étape 1 : Configurer Jenkins
 
-1)Manage Jenkins → Configure System
-2)Section GitHub → Add GitHub Server
-3)Ajouter les credentials GitHub
+1) Manage Jenkins → Configure System
+2) Section GitHub → Add GitHub Server
+3) Ajouter les credentials GitHub
 
 Étape 2 : Configurer le repository GitHub
 
-1)Settings → Webhooks → Add webhook
-2)Payload URL : http://<JENKINS_URL>/github-webhook/
-3)Content type : application/json
-4)Events : Just the push event
+1) Settings → Webhooks → Add webhook
+2) Payload URL : http://<JENKINS_URL>/github-webhook/
+3) Content type : application/json
+4) Events : Just the push event
+
+**![Webhook](./images/webhook.png)**
 
 **![Dockerhub app v1.0](./images/deploiement/dockerbub-v11.png)**
 
 ## **Part 3: Deloyment of different applications in a k8s cluster**
 
+a) Architecture
 
+Regarding the architecture, we have pods.
 
