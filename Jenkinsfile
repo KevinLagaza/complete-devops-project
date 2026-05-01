@@ -36,7 +36,7 @@ pipeline {
                         returnStdout: true
                     ).trim()
                     env.BRANCH_NAME = env.GIT_BRANCH?.replaceAll('origin/', '') ?: 'unknown'
-                    
+
                     echo "Version: ${env.VERSION}"
                     echo "Branch: ${env.BRANCH_NAME}"
                 }
@@ -88,9 +88,6 @@ pipeline {
         }
 
         stage('Build') {
-            when {
-                branch 'develop'
-            }
             steps {
                 sh """
                     docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
@@ -99,9 +96,6 @@ pipeline {
         }
 
         stage('Security Scan - Images') {
-            when {
-                branch 'develop'
-            }
             steps {
                 sh """
                     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
@@ -115,9 +109,7 @@ pipeline {
         }
 
         stage('Test') {
-            when {
-                branch 'develop'
-            }
+            when { anyOf { branch 'develop'; branch 'feature/*' } }
             steps {
                 sh """
                     docker network create test-net-${BUILD_NUMBER} || true
