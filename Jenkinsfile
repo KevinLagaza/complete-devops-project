@@ -177,7 +177,7 @@ pipeline {
         stage('Deploy with Ansible') {
             when {
                 expression { 
-                    return env.GIT_BRANCH == 'origin/main'
+                    return env.GIT_BRANCH == 'origin/develop'
                 }
             }
             steps {
@@ -230,7 +230,7 @@ EOF
         stage('Verify Deployment') {
             when {
                 expression { 
-                    return env.GIT_BRANCH == 'origin/main'
+                    return env.GIT_BRANCH == 'origin/develop'
                 }
             }
             steps {
