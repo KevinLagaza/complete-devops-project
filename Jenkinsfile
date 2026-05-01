@@ -147,9 +147,7 @@ pipeline {
         }
 
         stage('Push') {
-            when {
-                branch 'main'
-            }
+            when { anyOf { branch 'develop'; branch 'main' } }
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: "${DOCKER_CREDENTIALS_ID}",
