@@ -201,5 +201,7 @@ Configuration du Webhook GitHub
 
 **![Dockerhub app v1.0](./images/deploiement/dockerbub-v11.png)**
 
+## **Part 3: Deloyment of different applications in a k8s cluster**
+
 
 
