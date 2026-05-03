@@ -22,9 +22,8 @@
   notify: Restart pgAdmin
 
 - name: Start pgAdmin
-  ansible.builtin.shell:
-    cmd: docker compose up -d
-    chdir: "{{ pgadmin_compose_dir }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ pgadmin_compose_dir }}"
     state: present
 
 - name: Wait for pgAdmin to be ready

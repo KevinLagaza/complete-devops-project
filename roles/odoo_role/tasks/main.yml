@@ -25,9 +25,8 @@
   notify: Restart Odoo stack
 
 - name: Start Odoo stack
-  ansible.builtin.shell:
-    cmd: docker compose up -d
-    chdir: "{{ odoo_compose_dir }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ odoo_compose_dir }}"
     state: present
 
 - name: Wait for Odoo to be ready

@@ -12,9 +12,8 @@
     mode: '0644'
 
 - name: Pull and start IC-Webapp
-  ansible.builtin.shell:
-    cmd: docker compose up -d
-    chdir: "{{ compose_dir }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_dir }}"
     state: present
     pull: always
 
