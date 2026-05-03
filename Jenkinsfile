@@ -165,7 +165,7 @@ pipeline {
 
         stage('Deploy with Ansible') {
             when {
-                branch 'develop'
+                branch 'main'
             }
             steps {
                 withCredentials([sshUserPrivateKey(
@@ -216,7 +216,7 @@ EOF
 
         stage('Verify Deployment') {
             when {
-                branch 'develop'
+                branch 'main'
             }
             steps {
                 sh """
