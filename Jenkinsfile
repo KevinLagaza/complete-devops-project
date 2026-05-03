@@ -22,14 +22,10 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+
+        stage('Checkout and Extract Version') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Extract Version') {
-            steps {
                 script {
                     env.VERSION = sh(
                         script: "awk -F': ' '/^version:/ {print \$2}' releases.txt",
@@ -90,6 +86,11 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
+                    # Delete the orphaned images
+                    docker image prune -f || true
+                    # Delete the specific image to ensure a clean build
+                    docker rmi ${IC_WEBAPP_IMAGE}:${VERSION} 2>/dev/null || true
+                    # Build the image without cache to ensure all layers are fresh
                     docker build --no-cache -t ${IC_WEBAPP_IMAGE}:${VERSION} .
                 """
             }
