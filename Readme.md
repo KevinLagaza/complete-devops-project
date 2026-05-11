@@ -4,8 +4,7 @@
 
 The company **IC GROUP**, where I work as a DevOps engineer, wants to set up a showcase website that provides access to its 2 flagship applications:
 
-1) Odoo
-2) pgAdmin
+1) **Odoo**
 
 **Odoo** is a multi-purpose ERP that manages sales, purchases, accounting, inventory, personnel, and more.
 Odoo is distributed in both Community and Enterprise editions. ICGROUP wants to have control over the code and make its own modifications and customizations, so they opted for the Community edition. Several versions of Odoo are available, and version 13.0 was chosen because it includes an LMS (Learning Management System) that will be used to publish internal training courses and share information more easily.
@@ -14,6 +13,8 @@ Useful links:
 - Official website: [ https://www.odoo.com/ ](https://www.odoo.com/) 
 - Official GitHub: [ https://github.com/odoo/odoo.git ](https://github.com/odoo/odoo.git)
 - Official Docker Hub: [ https://hub.docker.com/_/odoo ](https://hub.docker.com/_/odoo)
+
+2) **pgAdmin**
 
 **pgAdmin** will be used to graphically administer the PostgreSQL database created previously.
 
@@ -57,11 +58,13 @@ ICGROUP's objective is to set up a CI/CD pipeline enabling continuous integratio
 
 #### Prerequisites
 
-1) AWS
+1) **AWS**
 
 - Create an **elastic IP**. 
 - Create a **security group** and attach **SSH, HTTP, HTTPS, 8080, 5050, 8069 and 50000** in the security group rules.
+
 **![Ansible installation](./images/security-group.png)**
+
 - Create one server (**with at least 30 GB of storage**) and attach both previous elastic IP and security group. 
 - Create **two other servers** for both **odoo** and **webapp**.  
 - Install **docker** and **docker-compose** on all servers
@@ -83,7 +86,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose -v
 ```
 
-2) Install tools (on the first server)
+2) **Install tools** (on the first server)
 
 a) **Jenkins**
 
@@ -153,7 +156,7 @@ exit
 ```
 **![Ansible installation](./images/ansible-installation.png)**
 
-2) Install odoo (on the second server)
+2) **Install odoo** (on the second server)
 
 Recall to add a security group rule for port 8069.
 ```bash
@@ -167,7 +170,7 @@ docker inspect --format='{{json .State.Health}}' odoo | jq
 ```
 Then type ``http://<EC2_PUBLIC_IP>:8069`` in the web browser.
 
-3) Deploying the applications
+3) **Deploying the applications**
 
 a)
 After running manually the pipeline, all the apps (including v:1.0 of the web app) were successfully deployed.
@@ -205,7 +208,45 @@ Configuration du Webhook GitHub
 
 ## **Part 3: Deloyment of different applications in a k8s cluster**
 
-a) Architecture
+a) Prerequisites
+
+| Requirement | Version |
+|-------------|---------|
+| Kubernetes | 1.19+ |
+| kubectl | Latest |
+| Docker | Latest |
+| Docker Hub Account | Required |
+
+> 💡 **Tip:** For this project, a small VM from [KillerCoda](https://killercoda.com/) with Kubernetes pre-installed was used.
+
+b) **Architecture**
 
 Regarding the architecture, we have pods.
 
+c) **Deployment**
+
+Deployment with Kustomize
+
+```bash
+kubectl apply -k k8s/
+```
+
+Deployment file by file
+
+```bash
+# Créer le namespace
+kubectl apply -f k8s/namespace.yml
+
+# Créer les secrets et configmaps
+kubectl apply -f k8s/secrets/
+kubectl apply -f k8s/configmaps/
+
+# Créer les volumes
+kubectl apply -f k8s/volumes/
+
+# Créer les deployments
+kubectl apply -f k8s/deployments/
+
+# Créer les services
+kubectl apply -f k8s/services/
+```
