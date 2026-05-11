@@ -223,30 +223,37 @@ b) **Architecture**
 
 Regarding the architecture, we have pods.
 
-c) **Deployment**
-
-Deployment with Kustomize
-
-```bash
-kubectl apply -k k8s/
-```
-
-Deployment file by file
+At first, run the following commands:
 
 ```bash
 # Créer le namespace
 kubectl apply -f k8s/namespace.yml
 
-# Créer les secrets et configmaps
+# Créer les secrets et configMap
 kubectl apply -f k8s/secrets/
-kubectl apply -f k8s/configmaps/
+kubectl apply -f k8s/configMap/
 
 # Créer les volumes
 kubectl apply -f k8s/volumes/
+```
 
+**![Prerequisites k8s](./images/deploiement/prerequisites-k8s.png)**
+
+c) **Odoo application deployment**
+
+```bash
 # Créer les deployments
-kubectl apply -f k8s/deployments/
+kubectl apply -f k8s/deployments/odoo-deployment.yml
 
 # Créer les services
 kubectl apply -f k8s/services/
+```
+
+
+d)
+
+Deployment with Kustomize
+
+```bash
+kubectl apply -k k8s/
 ```
