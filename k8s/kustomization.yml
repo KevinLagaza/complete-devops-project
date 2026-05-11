@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: icgroup
+
+commonLabels:
+  env: prod
+
+resources:
+  - namespace.yml
+  - secrets/secrets.yml
+  - configmaps/pgadmin-servers-config.yml
+  - volumes/postgres-pv-pvc.yml
+  - deployments/postgres-deployment.yml
+  - deployments/odoo-deployment.yml
+  - deployments/pgadmin-deployment.yml
+  - services/postgres-service.yml
+  - services/odoo-service.yml
+  - services/pgadmin-service.yml
