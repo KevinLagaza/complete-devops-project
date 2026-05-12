@@ -242,13 +242,21 @@ kubectl apply -f k8s/volumes/
 c) **Odoo application deployment**
 
 ```bash
-# Créer les deployments
+kubectl apply -f k8s/deployments/postgres-deployment.yml
+kubectl apply -f k8s/services/postgres-service.yml
 kubectl apply -f k8s/deployments/odoo-deployment.yml
-
-# Créer les services
-kubectl apply -f k8s/services/
+kubectl apply -f k8s/services/odoo-service.yml
 ```
 
+**![Pods checking](./images/deploiement/odoo_k8s_deploy.png)**
+
+To access the odoo app, do the following:
+
+**![Access traffic port](./images/deploiement/traffic_port.png)**
+
+**![Access odoo app](./images/deploiement/access_odoo_killercoda.png)**
+
+**![Check odoo app](./images/deploiement/odoo_deploy_via_k8s.png)**
 
 d)
 
