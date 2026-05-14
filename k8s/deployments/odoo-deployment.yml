@@ -7,7 +7,7 @@ metadata:
     app: odoo
     env: prod
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: odoo
@@ -23,6 +23,12 @@ spec:
           image: odoo:17
           ports:
             - containerPort: 8069
+          command:
+            - /bin/bash
+            - -c
+            - |
+              odoo --init=base --database=odoo --db_host=$HOST --db_user=$USER --db_password=$PASSWORD --stop-after-init || true
+              exec odoo
           env:
             - name: HOST
               value: postgres-service
@@ -36,8 +42,6 @@ spec:
                 secretKeyRef:
                   name: odoo-secrets
                   key: POSTGRES_PASSWORD
-            - name: DATABASE
-              value: odoo
           resources:
             requests:
               memory: "512Mi"
@@ -48,18 +52,18 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8069
-            initialDelaySeconds: 120
+            initialDelaySeconds: 180
             periodSeconds: 30
             failureThreshold: 5
           readinessProbe:
             tcpSocket:
               port: 8069
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 10
             failureThreshold: 5
           startupProbe:
             tcpSocket:
               port: 8069
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
             failureThreshold: 30
