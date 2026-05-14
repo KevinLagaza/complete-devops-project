@@ -18,6 +18,10 @@ spec:
         app: pgadmin
         env: prod
     spec:
+      securityContext:
+        runAsUser: 5050
+        runAsGroup: 5050
+        fsGroup: 5050
       containers:
         - name: pgadmin
           image: dpage/pgadmin4:8.4
@@ -52,15 +56,16 @@ spec:
             httpGet:
               path: /misc/ping
               port: 80
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /misc/ping
               port: 80
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 5
       volumes:
         - name: pgadmin-servers
           configMap:
             name: pgadmin-servers-config
+            defaultMode: 0600

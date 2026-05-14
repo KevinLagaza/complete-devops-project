@@ -260,8 +260,37 @@ To access the odoo app, do the following:
 
 d) **PgAdmin application deployment**
 
+```bash
+kubectl apply -f k8s/deployments/pgadmin-deployment.yml
+kubectl apply -f k8s/services/pgadmin-service.yml
+```
+
+
+e) Verification
+
+```bash
+# Vérifier le namespace
+kubectl get ns icgroup
+
+# Vérifier toutes les ressources
+kubectl get all -n icgroup -l env=prod
+
+# Vérifier les pods
+kubectl get pods -n icgroup
+
+# Vérifier les logs
+kubectl logs -n icgroup -l app=odoo
+kubectl logs -n icgroup -l app=postgres
+kubectl logs -n icgroup -l app=pgadmin
+
+# Vérifier la persistance
+kubectl get pv,pvc -n icgroup
+```
+
 Deployment with Kustomize
 
 ```bash
 kubectl apply -k k8s/
 ```
+
+Redigez entièrement le contenu du fichier webapp/task/main.yml afin de deployer l'application conteneuriser en utilisant le proxy nginx
