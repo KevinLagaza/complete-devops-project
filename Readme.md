@@ -246,6 +246,8 @@ kubectl apply -f k8s/deployments/postgres-deployment.yml
 kubectl apply -f k8s/services/postgres-service.yml
 kubectl apply -f k8s/deployments/odoo-deployment.yml
 kubectl apply -f k8s/services/odoo-service.yml
+# Augmenter les replicas
+kubectl scale deployment odoo -n icgroup --replicas=2
 ```
 
 **![Pods checking](./images/deploiement/odoo_k8s_deploy.png)**
