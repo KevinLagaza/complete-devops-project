@@ -36,6 +36,8 @@ spec:
                 secretKeyRef:
                   name: odoo-secrets
                   key: POSTGRES_PASSWORD
+            - name: DATABASE
+              value: odoo
           resources:
             requests:
               memory: "512Mi"
@@ -44,14 +46,20 @@ spec:
               memory: "1Gi"
               cpu: "500m"
           livenessProbe:
-            httpGet:
-              path: /web/health
+            tcpSocket:
+              port: 8069
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
               port: 8069
             initialDelaySeconds: 60
-            periodSeconds: 30
-          readinessProbe:
-            httpGet:
-              path: /web/health
+            periodSeconds: 10
+            failureThreshold: 5
+          startupProbe:
+            tcpSocket:
               port: 8069
             initialDelaySeconds: 30
             periodSeconds: 10
+            failureThreshold: 30
