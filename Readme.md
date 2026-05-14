@@ -258,7 +258,7 @@ To access the odoo app, do the following:
 
 **![Check odoo app](./images/deploiement/odoo_deploy_via_k8s.png)**
 
-d)
+d) **PgAdmin application deployment**
 
 Deployment with Kustomize
 
