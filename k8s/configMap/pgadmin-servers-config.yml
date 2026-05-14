@@ -19,7 +19,7 @@ data:
           "ConnectionParameters": {
             "sslmode": "prefer",
             "connect_timeout": 10
-          }
+          },
           "PassFile": "/pgadmin4/pgpass"
         }
       }
