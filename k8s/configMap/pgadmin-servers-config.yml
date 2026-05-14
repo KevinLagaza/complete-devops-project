@@ -25,4 +25,4 @@ data:
       }
     }
   pgpass: |
-    postgres-service:5432:postgres:odoo:odoo_secure_password
+    postgres-service:5432:*:odoo:odoo_secure_password
