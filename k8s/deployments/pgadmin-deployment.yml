@@ -73,18 +73,23 @@ spec:
               path: /misc/ping
               port: 80
             initialDelaySeconds: 10
-            periodSeconds: 10
-            failureThreshold: 30
+            periodSeconds: 5
+            failureThreshold: 60
+            timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /misc/ping
               port: 80
             periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /misc/ping
               port: 80
             periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
       volumes:
         - name: pgadmin-config
           configMap:
