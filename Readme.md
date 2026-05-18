@@ -267,6 +267,18 @@ kubectl apply -f k8s/deployments/pgadmin-deployment.yml
 kubectl apply -f k8s/services/pgadmin-service.yml
 ```
 
+**![Check pgadmin service part1](./images/deploiement/pgadmin_k8s_deploy_part1.png)**
+
+Because of limited resources, I tested the pgadmin service via this command:
+```bash
+kubectl run test-curl --rm -it \
+  --namespace=icgroup \
+  --image=curlimages/curl \
+  --restart=Never \
+  -- curl -v http://pgadmin-service/login
+``` 
+
+**![Check pgadmin service part2](./images/deploiement/pgadmin_k8s_deploy_part2.png)**
 
 e) Verification
 
