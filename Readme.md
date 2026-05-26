@@ -283,10 +283,15 @@ kubectl run test-curl --rm -it \
 e) ic-webapp deployment
 
 ```bash
-kubectl apply -f k8s/configmaps/ic-webapp-config.yml
 kubectl apply -f k8s/deployments/ic-webapp-deployment.yml
 kubectl apply -f k8s/services/ic-webapp-service.yml
 ```
+
+**![IC-Webapp pods](./images/deploiement/ic-webapp-pods.png)**
+
+**![Accessing IC-Webapp](./images/deploiement/ic-webapp-port.png)**
+
+**![IC-Webapp Overview](./images/deploiement/ic-webapp-overview.png)**
 
 f) Verification
 
@@ -303,14 +308,14 @@ kubectl get pods -n icgroup
 # Vérifier les logs
 kubectl logs -n icgroup -l app=odoo
 kubectl logs -n icgroup -l app=postgres
-kubect logs -n icgroup -l app=pgadmin
-kubect logs -n icgroup -l app=ic-webapp
+kubectl logs -n icgroup -l app=pgadmin
+kubectl logs -n icgroup -l app=ic-webapp
 
 # Vérifier la persistance
 kubectl get pv,pvc -n icgroup
 ```
-
-Deployment with Kustomize
+**NB:**
+One can deploy all applications at once by using **Kustomize**
 
 ```bash
 kubectl apply -k k8s/
