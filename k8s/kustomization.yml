@@ -9,8 +9,8 @@ commonLabels:
 resources:
   - namespace.yml
   - secrets/secrets.yml
-  - configmaps/pgadmin-servers-config.yml
-  - configmaps/ic-webapp-config.yml
+  - configMap/pgadmin-servers-config.yml
+  - configMap/ic-webapp-config.yml
   - volumes/postgres-pv-pvc.yml
   - deployments/postgres-deployment.yml
   - deployments/odoo-deployment.yml
