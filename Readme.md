@@ -280,7 +280,15 @@ kubectl run test-curl --rm -it \
 
 **![Check pgadmin service part2](./images/deploiement/pgadmin_k8s_deploy_part2.png)**
 
-e) Verification
+e) ic-webapp deployment
+
+```bash
+kubectl apply -f k8s/configmaps/ic-webapp-config.yml
+kubectl apply -f k8s/deployments/ic-webapp-deployment.yml
+kubectl apply -f k8s/services/ic-webapp-service.yml
+```
+
+f) Verification
 
 ```bash
 # Vérifier le namespace
@@ -295,7 +303,8 @@ kubectl get pods -n icgroup
 # Vérifier les logs
 kubectl logs -n icgroup -l app=odoo
 kubectl logs -n icgroup -l app=postgres
-kubectl logs -n icgroup -l app=pgadmin
+kubect logs -n icgroup -l app=pgadmin
+kubect logs -n icgroup -l app=ic-webapp
 
 # Vérifier la persistance
 kubectl get pv,pvc -n icgroup
