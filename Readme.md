@@ -320,5 +320,3 @@ One can deploy all applications at once by using **Kustomize**
 ```bash
 kubectl apply -k k8s/
 ```
-
-Redigez entièrement le contenu du fichier webapp/task/main.yml afin de deployer l'application conteneuriser en utilisant le proxy nginx
