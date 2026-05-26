@@ -3,8 +3,10 @@ kind: Kustomization
 
 namespace: icgroup
 
-commonLabels:
-  env: prod
+labels:
+  - pairs:
+      env: prod
+    includeSelectors: false
 
 resources:
   - namespace.yml
