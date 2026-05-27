@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ic-webapp-config
+  namespace: icgroup
+  labels:
+    app: ic-webapp
+    env: prod
+data:
+  ODOO_URL: "http://odoo-service:8069"
+  PGADMIN_URL: "http://pgadmin-service:80"

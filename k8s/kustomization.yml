@@ -3,17 +3,22 @@ kind: Kustomization
 
 namespace: icgroup
 
-commonLabels:
-  env: prod
+labels:
+  - pairs:
+      env: prod
+    includeSelectors: false
 
 resources:
   - namespace.yml
   - secrets/secrets.yml
-  - configmaps/pgadmin-servers-config.yml
+  - configMap/pgadmin-servers-config.yml
+  - configMap/ic-webapp-config.yml
   - volumes/postgres-pv-pvc.yml
   - deployments/postgres-deployment.yml
   - deployments/odoo-deployment.yml
   - deployments/pgadmin-deployment.yml
+  - deployments/ic-webapp-deployment.yml
   - services/postgres-service.yml
   - services/odoo-service.yml
   - services/pgadmin-service.yml
+  - services/ic-webapp-service.yml

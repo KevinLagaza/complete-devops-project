@@ -18,9 +18,31 @@ spec:
         app: pgadmin
         env: prod
     spec:
+      initContainers:
+        - name: setup-config
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /var/lib/pgadmin
+              cp /tmp/servers.json /var/lib/pgadmin/servers.json
+              cp /tmp/pgpass /var/lib/pgadmin/pgpass
+              chmod 600 /var/lib/pgadmin/pgpass
+              chmod 644 /var/lib/pgadmin/servers.json
+              chown -R 5050:5050 /var/lib/pgadmin
+          volumeMounts:
+            - name: pgadmin-config
+              mountPath: /tmp/servers.json
+              subPath: servers.json
+            - name: pgadmin-config
+              mountPath: /tmp/pgpass
+              subPath: pgpass
+            - name: pgadmin-data
+              mountPath: /var/lib/pgadmin
       containers:
         - name: pgadmin
-          image: dpage/pgadmin4:latest
+          image: dpage/pgadmin4:8.4
           ports:
             - containerPort: 80
           env:
@@ -34,33 +56,43 @@ spec:
                 secretKeyRef:
                   name: odoo-secrets
                   key: PGADMIN_DEFAULT_PASSWORD
+            - name: PGADMIN_SERVER_JSON_FILE
+              value: /var/lib/pgadmin/servers.json
           volumeMounts:
-            - name: pgadmin-servers
-              mountPath: /pgadmin4/servers.json
-              subPath: servers.json
-            - name: pgadmin-servers
-              mountPath: /pgadmin4/pgpass
-              subPath: pgpass
+            - name: pgadmin-data
+              mountPath: /var/lib/pgadmin
           resources:
             requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
               memory: "256Mi"
               cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "250m"
-          livenessProbe:
-            httpGet:
-              path: /misc/ping
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /misc/ping
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 5
+            failureThreshold: 60
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /misc/ping
+              port: 80
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /misc/ping
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
       volumes:
-        - name: pgadmin-servers
+        - name: pgadmin-config
           configMap:
             name: pgadmin-servers-config
+        - name: pgadmin-data
+          emptyDir: {}

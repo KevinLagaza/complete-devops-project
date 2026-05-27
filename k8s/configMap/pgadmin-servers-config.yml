@@ -16,10 +16,13 @@ data:
           "Port": 5432,
           "MaintenanceDB": "postgres",
           "Username": "odoo",
-          "SSLMode": "prefer",
+          "ConnectionParameters": {
+            "sslmode": "prefer",
+            "connect_timeout": 10
+          },
           "PassFile": "/pgadmin4/pgpass"
         }
       }
     }
   pgpass: |
-    postgres-service:5432:postgres:odoo:odoo_secure_password
+    postgres-service:5432:*:odoo:odoo_secure_password

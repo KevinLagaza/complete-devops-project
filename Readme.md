@@ -219,34 +219,114 @@ a) Prerequisites
 
 > 💡 **Tip:** For this project, a small VM from [KillerCoda](https://killercoda.com/) with Kubernetes pre-installed was used.
 
-b) **Architecture**
-
-Regarding the architecture, we have pods.
-
-c) **Deployment**
-
-Deployment with Kustomize
-
-```bash
-kubectl apply -k k8s/
-```
-
-Deployment file by file
+At first, run the following commands:
 
 ```bash
 # Créer le namespace
 kubectl apply -f k8s/namespace.yml
 
-# Créer les secrets et configmaps
+# Créer les secrets et configMap
 kubectl apply -f k8s/secrets/
-kubectl apply -f k8s/configmaps/
+kubectl apply -f k8s/configMap/
 
 # Créer les volumes
 kubectl apply -f k8s/volumes/
+```
+**![Prerequisites k8s](./images/deploiement/prerequisites-k8s.png)**
 
-# Créer les deployments
-kubectl apply -f k8s/deployments/
+b) **Architecture**
 
-# Créer les services
-kubectl apply -f k8s/services/
+**![k8s architecture](./images/synoptique_Kubernetes.jpeg)**
+
+Here is the description of the architecture:
+- **A** is a service that enables to exposition of the ic-webapp
+- **B** is a group a two pods wherein the ic-webapp is running
+- **C** is a service that exposes the odoo app
+- **D** is a group a two pods wherein the odoo app is running
+- **E** is a service that exposes the postgres database required for the odoo app
+- **F** is the pod wherein the postgres database app is running
+- **G** is a service that exposes the pgadmin app
+- **H** is the pod wherein the postgres database app is running
+
+c) **Odoo application deployment**
+
+```bash
+kubectl apply -f k8s/deployments/postgres-deployment.yml
+kubectl apply -f k8s/services/postgres-service.yml
+kubectl apply -f k8s/deployments/odoo-deployment.yml
+kubectl apply -f k8s/services/odoo-service.yml
+# Augmenter les replicas
+kubectl scale deployment odoo -n icgroup --replicas=2
+```
+
+**![Pods checking](./images/deploiement/odoo_k8s_deploy.png)**
+
+To access the odoo app, do the following:
+
+**![Access traffic port](./images/deploiement/traffic_port.png)**
+
+**![Access odoo app](./images/deploiement/access_odoo_killercoda.png)**
+
+**![Check odoo app](./images/deploiement/odoo_deploy_via_k8s.png)**
+
+d) **PgAdmin application deployment**
+
+```bash
+kubectl apply -f k8s/deployments/pgadmin-deployment.yml
+kubectl apply -f k8s/services/pgadmin-service.yml
+```
+
+**![Check pgadmin service part1](./images/deploiement/pgadmin_k8s_deploy_part1.png)**
+
+Because of limited resources, I tested the pgadmin service via this command:
+```bash
+kubectl run test-curl --rm -it \
+  --namespace=icgroup \
+  --image=curlimages/curl \
+  --restart=Never \
+  -- curl -v http://pgadmin-service/login
+``` 
+
+**![Check pgadmin service part2](./images/deploiement/pgadmin_k8s_deploy_part2.png)**
+
+e) ic-webapp deployment
+
+```bash
+kubectl apply -f k8s/deployments/ic-webapp-deployment.yml
+kubectl apply -f k8s/services/ic-webapp-service.yml
+```
+
+**![IC-Webapp pods](./images/deploiement/ic-webapp-pods.png)**
+
+**![Accessing IC-Webapp](./images/deploiement/ic-webapp-port.png)**
+
+**![IC-Webapp Overview](./images/deploiement/ic-webapp-overview.png)**
+
+f) Verification
+
+```bash
+# Vérifier le namespace
+kubectl get ns icgroup
+
+# Vérifier toutes les ressources
+kubectl get all -n icgroup -l env=prod
+
+# Vérifier les pods
+kubectl get pods -n icgroup
+
+# Vérifier les logs
+kubectl logs -n icgroup -l app=odoo
+kubectl logs -n icgroup -l app=postgres
+kubectl logs -n icgroup -l app=pgadmin
+kubectl logs -n icgroup -l app=ic-webapp
+
+# Vérifier la persistance
+kubectl get pv,pvc -n icgroup
+```
+
+**NB:**
+One can deploy all applications at once by using **Kustomize**
+
+```bash
+kubectl apply -k k8s/
 ```
