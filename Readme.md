@@ -219,10 +219,6 @@ a) Prerequisites
 
 > 💡 **Tip:** For this project, a small VM from [KillerCoda](https://killercoda.com/) with Kubernetes pre-installed was used.
 
-b) **Architecture**
-
-Regarding the architecture, we have pods.
-
 At first, run the following commands:
 
 ```bash
@@ -236,8 +232,21 @@ kubectl apply -f k8s/configMap/
 # Créer les volumes
 kubectl apply -f k8s/volumes/
 ```
-
 **![Prerequisites k8s](./images/deploiement/prerequisites-k8s.png)**
+
+b) **Architecture**
+
+**![k8s architecture](./images/synoptique_Kubernetes.jpeg)**
+
+Here is the description of the architecture:
+- **A** is a service that enables to exposition of the ic-webapp
+- **B** is a group a two pods wherein the ic-webapp is running
+- **C** is a service that exposes the odoo app
+- **D** is a group a two pods wherein the odoo app is running
+- **E** is a service that exposes the postgres database required for the odoo app
+- **F** is the pod wherein the postgres database app is running
+- **G** is a service that exposes the pgadmin app
+- **H** is the pod wherein the postgres database app is running
 
 c) **Odoo application deployment**
 
@@ -314,6 +323,7 @@ kubectl logs -n icgroup -l app=ic-webapp
 # Vérifier la persistance
 kubectl get pv,pvc -n icgroup
 ```
+
 **NB:**
 One can deploy all applications at once by using **Kustomize**
 
