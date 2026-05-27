@@ -1,0 +1,17 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: ic-webapp-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 172.30.1.200-172.30.1.250
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: ic-webapp-l2-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - ic-webapp-pool

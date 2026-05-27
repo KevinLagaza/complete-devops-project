@@ -237,20 +237,28 @@ kubectl apply -f k8s/volumes/
 
 ```bash
 # Install the Ingress Controller
-minikube addons enable ingress
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
-# Apply the Ingress
-kubectl apply -f k8s/ingress/ingress.yml
 
 # Verify the installation
 kubectl get pods -n ingress-nginx
 kubectl get svc -n ingress-nginx
+
+# Apply the Ingress
+kubectl apply -f k8s/ingress/ingress.yml
 ```
+
+# Installer MetalLB
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
+
+# Attendre que les pods soient prêts
+kubectl wait --namespace metallb-system \
+  --for=condition=ready pod \
+  --selector=app=metallb \
+  --timeout=90s
 
 
 ```bash
 # Configure the local file containing hosts
-minikube ip
 sudo nano /etc/hosts
 # Add the following lines into the aforementionned file
 <INGRESS_IP>  ic-webapp.local
