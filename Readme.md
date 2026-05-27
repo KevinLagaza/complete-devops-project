@@ -258,14 +258,15 @@ kubectl wait --namespace metallb-system \
 
 
 ```bash
-# Configure the local file containing hosts
+# Retrieve the INGRESS_IP
+kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+# Edit the hosts file
 sudo nano /etc/hosts
 # Add the following lines into the aforementionned file
 <INGRESS_IP>  ic-webapp.local
 <INGRESS_IP>  odoo.local
 <INGRESS_IP>  pgadmin.local
 ```
-
 
 b) **Architecture**
 
