@@ -256,16 +256,7 @@ kubectl wait --namespace metallb-system \
   --selector=app=metallb \
   --timeout=90s
 
-
-```bash
-# Retrieve the INGRESS_IP
-kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
-# Edit the hosts file
-sudo nano /etc/hosts
-# Add the following lines into the aforementionned file
-<INGRESS_IP>  ic-webapp.local
-<INGRESS_IP>  odoo.local
-<INGRESS_IP>  pgadmin.local
+kubectl apply -f loadbalancer/metallb-config.yml
 ```
 
 b) **Architecture**
@@ -291,6 +282,10 @@ kubectl apply -f k8s/deployments/odoo-deployment.yml
 kubectl apply -f k8s/services/odoo-service.yml
 # Augmenter les replicas
 kubectl scale deployment odoo -n icgroup --replicas=2
+# Verification
+kubectl get -n icgroup -l app=odoo
+kubectl logs -n icgroup -l app=odoo
+kubectl port-forward svc/odoo-service 30069:8069 -n icgroup --address 0.0.0.0
 ```
 
 **![Pods checking](./images/deploiement/odoo_k8s_deploy.png)**
@@ -299,35 +294,37 @@ To access the odoo app, do the following:
 
 **![Access traffic port](./images/deploiement/traffic_port.png)**
 
-**![Access odoo app](./images/deploiement/access_odoo_killercoda.png)**
+**![Access odoo app](./images/deploiement/odoo-port.png)**
 
-**![Check odoo app](./images/deploiement/odoo_deploy_via_k8s.png)**
+**![Check odoo app](./images/deploiement/odoo-overview.png)**
 
 d) **PgAdmin application deployment**
 
 ```bash
 kubectl apply -f k8s/deployments/pgadmin-deployment.yml
 kubectl apply -f k8s/services/pgadmin-service.yml
+# Verification
+kubectl get -n icgroup -l app=pgadmin
+kubectl logs -n icgroup -l app=pgadmin
+kubectl port-forward svc/pgadmin-service 30050:80 -n icgroup --address 0.0.0.0
 ```
 
 **![Check pgadmin service part1](./images/deploiement/pgadmin_k8s_deploy_part1.png)**
 
-Because of limited resources, I tested the pgadmin service via this command:
-```bash
-kubectl run test-curl --rm -it \
-  --namespace=icgroup \
-  --image=curlimages/curl \
-  --restart=Never \
-  -- curl -v http://pgadmin-service/login
-``` 
+**![Accessing pgadmin](./images/deploiement/pgadmin-port.png)**
 
-**![Check pgadmin service part2](./images/deploiement/pgadmin_k8s_deploy_part2.png)**
+**![IC-Webapp Overview](./images/deploiement/pgadmin-overview.png)**
+
 
 e) ic-webapp deployment
 
 ```bash
 kubectl apply -f k8s/deployments/ic-webapp-deployment.yml
 kubectl apply -f k8s/services/ic-webapp-service.yml
+# Verification
+kubectl get -n icgroup -l app=ic-webapp
+kubectl logs -n icgroup -l app=ic-webapp
+kubectl port-forward svc/ic-webapp-service 30080:8080 -n icgroup --address 0.0.0.0
 ```
 
 **![IC-Webapp pods](./images/deploiement/ic-webapp-pods.png)**
@@ -336,26 +333,6 @@ kubectl apply -f k8s/services/ic-webapp-service.yml
 
 **![IC-Webapp Overview](./images/deploiement/ic-webapp-overview.png)**
 
-f) Verification
-
-```bash
-# Vérifier le namespace
-kubectl get ns icgroup
-
-# Vérifier toutes les ressources
-kubectl get all -n icgroup -l env=prod
-
-# Vérifier les pods
-kubectl get pods -n icgroup
-
-# Vérifier les logs
-kubectl logs -n icgroup -l app=odoo
-kubectl logs -n icgroup -l app=postgres
-kubectl logs -n icgroup -l app=pgadmin
-kubectl logs -n icgroup -l app=ic-webapp
-
-# Vérifier la persistance
-kubectl get pv,pvc -n icgroup
 ```
 
 **NB:**
