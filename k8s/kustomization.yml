@@ -22,3 +22,4 @@ resources:
   - services/odoo-service.yml
   - services/pgadmin-service.yml
   - services/ic-webapp-service.yml
+  - ingress/ingress.yml

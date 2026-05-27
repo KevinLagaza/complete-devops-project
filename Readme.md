@@ -234,6 +234,31 @@ kubectl apply -f k8s/volumes/
 ```
 **![Prerequisites k8s](./images/deploiement/prerequisites-k8s.png)**
 
+
+```bash
+# Install the Ingress Controller
+minikube addons enable ingress
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+# Apply the Ingress
+kubectl apply -f k8s/ingress/ingress.yml
+
+# Verify the installation
+kubectl get pods -n ingress-nginx
+kubectl get svc -n ingress-nginx
+```
+
+
+```bash
+# Configure the local file containing hosts
+minikube ip
+sudo nano /etc/hosts
+# Add the following lines into the aforementionned file
+<INGRESS_IP>  ic-webapp.local
+<INGRESS_IP>  odoo.local
+<INGRESS_IP>  pgadmin.local
+```
+
+
 b) **Architecture**
 
 **![k8s architecture](./images/synoptique_Kubernetes.jpeg)**

@@ -7,11 +7,9 @@ metadata:
     app: odoo
     env: prod
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: odoo
-    env: prod
   ports:
     - port: 8069
       targetPort: 8069
-      nodePort: 30069

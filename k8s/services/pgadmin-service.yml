@@ -7,12 +7,9 @@ metadata:
     app: pgadmin
     env: prod
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: pgadmin
-    env: prod
   ports:
     - port: 80
-      protocol: TCP
       targetPort: 80
-      nodePort: 30050

@@ -1,0 +1,66 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ic-webapp-ingress
+  namespace: icgroup
+  labels:
+    env: prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ic-webapp.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ic-webapp-service
+                port:
+                  number: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: odoo-ingress
+  namespace: icgroup
+  labels:
+    env: prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: odoo.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: odoo-service
+                port:
+                  number: 8069
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgadmin-ingress
+  namespace: icgroup
+  labels:
+    env: prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pgadmin.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pgadmin-service
+                port:
+                  number: 80
