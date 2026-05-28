@@ -14,6 +14,8 @@ resources:
   - configMap/pgadmin-servers-config.yml
   - configMap/ic-webapp-config.yml
   - volumes/postgres-pv-pvc.yml
+  - ingress/ingress.yml
+  - loadbalancer/metallb-config.yml
   - deployments/postgres-deployment.yml
   - deployments/odoo-deployment.yml
   - deployments/pgadmin-deployment.yml
@@ -22,4 +24,3 @@ resources:
   - services/odoo-service.yml
   - services/pgadmin-service.yml
   - services/ic-webapp-service.yml
-  - ingress/ingress.yml
