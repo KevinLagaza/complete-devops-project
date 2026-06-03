@@ -471,7 +471,7 @@ kubectl apply -k k8s/
 **P. Kevin Lagaza**  
 DataOps Engineer
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?logo=linkedin)](https://linkedin.com/in/kevinlagaza)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?logo=linkedin)](www.linkedin.com/in/pirewa-kevin-lagaza)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?logo=github)](https://github.com/kevinlagaza)
 [![Email](https://img.shields.io/badge/Email-Contact-EA4335?logo=gmail)](mailto:lagazakevin@gmail.com)
 
